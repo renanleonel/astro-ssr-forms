@@ -1,0 +1,58 @@
+---
+const errors = { username: "", email: "", password: "" };
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+
+    const { username, email, password } = Object.fromEntries(data.entries());
+
+    if (typeof username !== "string" || username.length < 1) {
+      errors.username += "Please enter a username. ";
+    }
+    if (typeof email !== "string" || email.length < 1) {
+      errors.email += "Email is not valid. ";
+    }
+    if (typeof password !== "string" || password.length < 6) {
+      errors.password += "Password must be at least 6 characters. ";
+    }
+    const hasErrors = Object.values(errors).some((msg) => msg);
+    if (!hasErrors) {
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+
+<form method="POST" class="flex flex-col gap-8 w-full">
+  <div class="text-white">
+    <label for="username">Username:</label>
+    <input
+      required
+      id="username"
+      type="text"
+      name="username"
+      class="text-black"
+    />
+  </div>
+  {errors.username && <p class="text-red-800">{errors.username}</p>}
+  <div class="text-white">
+    <label for="email">Email:</label>
+    <input required id="email" type="email" name="email" class="text-black" />
+  </div>
+  {errors.email && <p class="text-red-800">{errors.email}</p>}
+  <div class="text-white">
+    <label for="password">Password:</label>
+    <input
+      required
+      id="password"
+      type="password"
+      name="password"
+      class="text-black"
+    />
+  </div>
+  {errors.password && <p class="text-red-800">{errors.password}</p>}
+  <button class="bg-white rounded-lg py-2 w-44">Register</button>
+</form>
